@@ -23,7 +23,15 @@ const start = () => {
       name: 'intro',
       type: 'list',
       message: 'What would you like to do?',
-      choices: ['View All Employees', 'View All Employees By Department', 'View All Employees By Manager', 'Add Employee', 'Remove Employee', 'Update Employee Role', 'Update Employee Manager'],
+      choices: [
+        'View All Employees', 
+        'View All Employees By Department', 
+        'View All Employees By Manager', 
+        'Add Employee', 
+        'Remove Employee', 
+        'Update Employee Role', 
+        'Update Employee Manager'
+      ],
     })
       if (answer.intro === 'View All Employees') {
         viewAll(); 
@@ -95,7 +103,16 @@ const addEmployee = () => {
         name: 'role',
         type: 'input',
         message: `What is the employee's role?`,
-        choices: ['Sales Lead', 'Salesperson', 'Lead Engineer', 'Software Engineer', 'Account Manager', 'Accountant', 'Legal Team Lead'], // MAYBE EASIER WAY TO REUSE?
+        choices: [
+          'Sales Manager', 
+          'Sales Person', 
+          'Lead Engineer', 
+          'Software Engineer', 
+          'Account Manager', 
+          'Accountant', 
+          'Legal Team Lead',
+          'Lawyer'
+        ] // MAYBE EASIER WAY TO REUSE?
       },
       {
         name: 'manager',
@@ -138,7 +155,7 @@ const removeEmployee = () => {
       })
     .then()
         // (err) => {
-        //   if (err) throw err;
+        //   if (err) console.log(`Ahhhhh : `, err); ;
         //   console.table(answer); 
         //   console.log(`You've successfully added an employee!!`);
         //   start();
@@ -155,17 +172,17 @@ const updateManager = () => {
 
 }
 
-const selectingManager = () => {
-  return connection.prependOnceListener().query("SELECT * FROM EMPLOYEE")
-  .then(res => {
-    return res[0].map(manager => {
-      return {
-        name: `${manager.first_name} ${manager.last_name}`,
-        value: manager.id,
-      }
-    })
-  })
-}
+// const selectingManager = () => {
+//   return connection.prependOnceListener().query("SELECT * FROM EMPLOYEE")
+//   .then(res => {
+//     return res[0].map(manager => {
+//       return {
+//         name: `${manager.first_name} ${manager.last_name}`,
+//         value: manager.id,
+//       }
+//     })
+//   })
+// }
 
 
 
@@ -175,7 +192,7 @@ const selectingManager = () => {
 
 // connect to the mysql server and sql database
 connection.connect((err) => {
-  if (err) throw err;
+  if (err) console.log(`Ahhhhh : `, err); 
   // run the start function after the connection is made to prompt the user
   start();
 });
