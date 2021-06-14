@@ -44,7 +44,7 @@ const start = () => {
 
 const viewAll = () => {
   connection.query(
-    'SELECT * FROM Department', (err, res) => {
+    'SELECT * FROM department', (err, res) => {
       if(err) {
         console.log(`Ahhhhh : `, err); 
       }
@@ -56,7 +56,7 @@ const viewAll = () => {
 
 const viewByDepartment = () => {
   connection.query(
-    'SELECT * FROM Department', (err, res) => {
+    'SELECT * FROM department', (err, res) => {
       if(err) {
         console.log(`Ahhhhh : `, err); 
       }
