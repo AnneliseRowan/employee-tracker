@@ -12,56 +12,61 @@ const connection = mysql.createConnection({
   user: 'root',
 
   // Your password
-  password: '',
-  database: 'greatBay_DB',
+  password: 'password',
+  database: 'employee_trackerDB',
 });
 
-// function which prompts the user for what action they should take
+
 const start = () => {
   inquirer
     .prompt({
-      name: 'postOrBid',
+      name: 'intro',
       type: 'list',
-      message: 'Would you like to [POST] an auction or [BID] on an auction?',
-      choices: ['POST', 'BID', 'EXIT'],
+      message: 'What would you like to do?',
+      choices: ['View All Employees', 'View All Employees By Department', 'View All Employees By Manager', 'Add Employee', 'Remove Employee', 'Update Employee Role', 'Update Employee Manager'],
     })
-    .then((answer) => {
-      // based on their answer, either call the bid or the post functions
-      if (answer.postOrBid === 'POST') {
-        postAuction();
-      } else if (answer.postOrBid === 'BID') {
-        bidAuction();
-      } else {
-        connection.end();
+      if (answer.intro === 'View All Employees') {
+        viewAll(); 
+      } else if (answer.intro === 'View All Employees By Department') {
+        viewByDepartment(); 
+      } else if (answer.intro === 'View All Employees By Manager') {
+        viewByManager(); 
+      } else if (answer.intro === 'Add Employee') {
+        addEmployee();
+      } else if (answer.intro === 'Remove Employee') {
+        removeEmployee();
+      } else if (answer.intro === 'Update Employee Role') {
+        updateEmployeeRole(); 
+      } else if (answer.intro === 'Update Employee Manager') {
+        updateManager(); 
       }
-    });
 };
 
-// function to handle posting new items up for auction
-const postAuction = () => {
-  // prompt for info about the item being put up for auction
+
+const addEmployee = () => {
   inquirer
     .prompt([
       {
-        name: 'item',
+        name: 'firstName',
         type: 'input',
-        message: 'What is the item you would like to submit?',
+        message: `What is the employee's first name?`,
       },
       {
-        name: 'category',
+        name: 'lastName',
         type: 'input',
-        message: 'What category would you like to place your auction in?',
+        message: `What is the employee's last name?`,
       },
       {
-        name: 'startingBid',
+        name: 'role',
         type: 'input',
-        message: 'What would you like your starting bid to be?',
-        validate(value) {
-          if (isNaN(value) === false) {
-            return true;
-          }
-          return false;
-        },
+        message: `What is the employee's role?`,
+        choices: ['Sales Lead', 'Salesperson', 'Lead Engineer', 'Software Engineer', 'Account Manager', 'Accountant', 'Legal Team Lead'],
+      },
+      {
+        name: 'manager',
+        type: 'input',
+        message: `Who is the employee's manager?`,
+        choices: ['', '', '', '', ''], // FIGURE OUT A WAY TO CALL THE MANAGERS FROM DB
       },
     ])
     .then((answer) => {
@@ -70,14 +75,14 @@ const postAuction = () => {
         'INSERT INTO auctions SET ?',
         // QUESTION: What does the || 0 do?
         {
-          item_name: answer.item,
-          category: answer.category,
-          starting_bid: answer.startingBid || 0,
-          highest_bid: answer.startingBid || 0,
+          first_name: answer.firstName,
+          last_name: answer.lastName,
+          role_id: answer.role,
+          manager_id: answer.manager,
         },
         (err) => {
           if (err) throw err;
-          console.log('Your auction was created successfully!');
+          console.log(`You've successfully added an employee!!`);
           // re-prompt the user for if they want to bid or post
           start();
         }
