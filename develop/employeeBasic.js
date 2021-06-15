@@ -42,6 +42,8 @@ const start = () => {
         updateEmployeeRole(); 
       } else if (answer.intro === 'Update Employee Manager') {
         updateManager(); 
+      } else {
+        connection.end(); 
       }
 };
 
@@ -52,14 +54,16 @@ INNER JOIN table2
 ON table1.column_name = table2.column_name;
 */
 
+/*
+SELECT e.id, CONCAT(e.first_name, ' ', e.last_name) AS Employee, employee_role.title AS Title, department_name AS Department, employee_role.salary AS Salary, CONCAT(m.first_name, " ", m.last_name) AS Manager 
+FROM employee e
+LEFT JOIN employee m ON m.id = e.manager_id JOIN employee_role ON e.role_id = employee_role.id JOIN department ON department.id = employee_role.department_id 
+*/
+
 const viewAll = () => {
   console.log(`Loading all information... \n`)
   connection.query(
-    `SELECT * FROM employee 
-    INNER JOIN 
-    employee_role ON employee.role_id = employee_role.id 
-    INNER JOIN 
-    department ON employee_role.department_id = department.id`, 
+    "SELECT * FROM employee INNER JOIN employee_role ON employee.role_id = employee_role.id INNER JOIN department ON employee_role.department_id = department.id", 
     (err, res) => {
       if(err) {
         console.error(`Ahhhhh : `, err); 
@@ -73,7 +77,7 @@ const viewAll = () => {
 const viewByDepartment = () => {
   console.log(`Loading information by department... \n`)
   connection.query(
-    'SELECT * FROM department', (err, res) => {
+    "SELECT * FROM department", (err, res) => {
       if(err) {
         console.log(`Ahhhhh : `, err); 
       }
@@ -93,9 +97,7 @@ ON table1.column_name = table2.column_name;
 const viewByRoles = () => {
   console.log(`Loading information by roles... \n`)
   connection.query(
-    `SELECT * FROM employee_role
-    INNER JOIN
-    department ON employee_role.department_id`,
+    "SELECT * FROM employee_role INNER JOIM department ON employee_role.department_id",
     (err, res) => {
       if(err) {
         console.error(`Ahhhhh : `, err); 
@@ -189,7 +191,7 @@ const updateEmployeeRole = () => {
 }
 
 const updateManager = () => {
-  connection.query("SELECT * FROM employee", (err, res) {
+  connection.query("SELECT * FROM employee", (err, res) => { //maybe should use connection.promisefy()???
     console.table(res); 
 
 
