@@ -1,17 +1,12 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
+const consoleTable = require('console.table'); //don't know if I need this?
 
-// create the connection information for the sql database
+
 const connection = mysql.createConnection({
   host: 'localhost',
-
-  // Your port; if not 3306
   port: 3306,
-
-  // Your username
   user: 'root',
-
-  // Your password
   password: 'password',
   database: 'employee_trackerDB',
 });
@@ -26,7 +21,7 @@ const start = () => {
       choices: [
         'View All Employees', 
         'View All Employees By Department', 
-        'View All Employees By Manager', 
+        'View All Employees By Roles', 
         'Add Employee', 
         'Remove Employee', 
         'Update Employee Role', 
@@ -37,8 +32,8 @@ const start = () => {
         viewAll(); 
       } else if (answer.intro === 'View All Employees By Department') {
         viewByDepartment(); 
-      } else if (answer.intro === 'View All Employees By Manager') {
-        viewByManager(); 
+      } else if (answer.intro === 'View All Employees By Roles') {
+        viewByRoles(); 
       } else if (answer.intro === 'Add Employee') {
         addEmployee();
       } else if (answer.intro === 'Remove Employee') {
@@ -50,11 +45,24 @@ const start = () => {
       }
 };
 
+/* Reference from W3Schools
+SELECT column_name(s)
+FROM table1
+INNER JOIN table2
+ON table1.column_name = table2.column_name;
+*/
+
 const viewAll = () => {
+  console.log(`Loading all information... \n`)
   connection.query(
-    'SELECT * FROM department', (err, res) => {
+    `SELECT * FROM employee 
+    INNER JOIN 
+    employee_role ON employee.role_id = employee_role.id 
+    INNER JOIN 
+    department ON employee_role.department_id = department.id`, 
+    (err, res) => {
       if(err) {
-        console.log(`Ahhhhh : `, err); 
+        console.error(`Ahhhhh : `, err); 
       }
       console.table(res); 
       start(); 
@@ -63,6 +71,7 @@ const viewAll = () => {
 };
 
 const viewByDepartment = () => {
+  console.log(`Loading information by department... \n`)
   connection.query(
     'SELECT * FROM department', (err, res) => {
       if(err) {
@@ -74,11 +83,22 @@ const viewByDepartment = () => {
   )
 };
 
-const viewByManager = () => {
+/* Reference from W3Schools
+SELECT column_name(s)
+FROM table1
+INNER JOIN table2
+ON table1.column_name = table2.column_name;
+*/
+
+const viewByRoles = () => {
+  console.log(`Loading information by roles... \n`)
   connection.query(
-    'SELECT * FROM employee_role', (err, res) => {
+    `SELECT * FROM employee_role
+    INNER JOIN
+    department ON employee_role.department_id`,
+    (err, res) => {
       if(err) {
-        console.log(`Ahhhhh : `, err); 
+        console.error(`Ahhhhh : `, err); 
       }
       console.table(res); 
       start(); 
@@ -134,9 +154,9 @@ const addEmployee = () => {
           manager_id: managerId,
         },
         (err) => {
-          if (err) throw err;
+          if (err) console.error(`Ahhhhh : `, err);
           console.table(answer); 
-          console.log(`You've successfully added an employee!!`);
+          console.log(`You've successfully added ${answer.firstName} ${answer.lastName}!!`);
           start();
         }
       );
@@ -145,7 +165,7 @@ const addEmployee = () => {
 
 
 const removeEmployee = () => {
-  connection.promise().query("SELECT * FROM employee")
+  connection.query("SELECT * FROM employee") //should maybe use connection.promise().query()????
     .then((res) => {
       return res[0].map(employee => {
         return {
@@ -169,7 +189,11 @@ const updateEmployeeRole = () => {
 }
 
 const updateManager = () => {
+  connection.query("SELECT * FROM employee", (err, res) {
+    console.table(res); 
 
+
+  })
 }
 
 // const selectingManager = () => {
@@ -190,9 +214,8 @@ const updateManager = () => {
 
 
 
-// connect to the mysql server and sql database
 connection.connect((err) => {
   if (err) console.log(`Ahhhhh : `, err); 
-  // run the start function after the connection is made to prompt the user
+
   start();
 });
