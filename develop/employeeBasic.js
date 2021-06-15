@@ -18,16 +18,8 @@ const start = () => {
       name: 'intro',
       type: 'list',
       message: 'What would you like to do?',
-      choices: [
-        'View All Employees', 
-        'View All Employees By Department', 
-        'View All Employees By Roles', 
-        'Add Employee', 
-        'Remove Employee', 
-        'Update Employee Role', 
-        'Update Employee Manager'
-      ],
-    })
+      choices: ['View All Employees', 'View All Employees By Department', 'View All Employees By Roles', 'Add Employee', 'Remove Employee', 'Update Employee Role', 'Update Employee Manager'],
+    }).then((answer) => {
       if (answer.intro === 'View All Employees') {
         viewAll(); 
       } else if (answer.intro === 'View All Employees By Department') {
@@ -45,6 +37,7 @@ const start = () => {
       } else {
         connection.end(); 
       }
+    })  
 };
 
 /* Reference from W3Schools
@@ -77,7 +70,8 @@ const viewAll = () => {
 const viewByDepartment = () => {
   console.log(`Loading information by department... \n`)
   connection.query(
-    "SELECT * FROM department", (err, res) => {
+    "SELECT e.id, CONCAT(e.first_name, ' ', e.last_name) AS Employee, employee_role.title AS Title, department_name AS Department, employee_role.salary AS Salary, CONCAT(m.first_name,' ', m.last_name) AS Manager FROM employee e LEFT JOIN employee m ON m.id = e.manager_id JOIN employee_role ON e.role_id = employee_role.id JOIN department ON department.id = employee_role.department_id ORDER BY department_name ASC", 
+    (err, res) => {
       if(err) {
         console.log(`Ahhhhh : `, err); 
       }
@@ -97,7 +91,7 @@ ON table1.column_name = table2.column_name;
 const viewByRoles = () => {
   console.log(`Loading information by roles... \n`)
   connection.query(
-    "SELECT * FROM employee_role INNER JOIM department ON employee_role.department_id",
+    "SELECT * FROM employee_role INNER JOIN department ON employee_role.department_id",
     (err, res) => {
       if(err) {
         console.error(`Ahhhhh : `, err); 
@@ -123,7 +117,7 @@ const addEmployee = () => {
       },
       {
         name: 'role',
-        type: 'input',
+        type: 'list',
         message: `What is the employee's role?`,
         choices: [
           'Sales Manager', 
