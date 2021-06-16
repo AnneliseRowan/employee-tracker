@@ -1,16 +1,14 @@
-const mysql = require('mysql');
 const inquirer = require('inquirer');
-const consoleTable = require('console.table'); //don't know if I need this?
-
+const util = require("util"); 
+const mysql = require('mysql');
 
 const connection = mysql.createConnection({
-  host: 'localhost',
-  port: 3306,
-  user: 'root',
-  password: 'password',
-  database: 'employee_trackerDB',
+    host: 'localhost',
+    port: 3306,
+    user: 'root',
+    password: 'password',
+    database: 'employee_trackerDB',
 });
-
 
 const start = () => {
   inquirer
@@ -18,7 +16,7 @@ const start = () => {
       name: 'intro',
       type: 'list',
       message: 'What would you like to do?',
-      choices: ['View All Employees By Lastname', 'View All Employees By Department', 'View All Employees By Titles', 'Add Employee', 'Remove Employee', 'Update Employee Role', 'Update Employee Manager'],
+      choices: ['View All Employees By Lastname', 'View All Employees By Department', 'View All Employees By Titles', 'Add Employee', 'Remove Employee', 'Update Employee Role', 'Update Employee Manager', 'Quit'],
     }).then((answer) => {
       if (answer.intro === 'View All Employees By Lastname') {
         viewAllByEmployee(); 
@@ -34,7 +32,7 @@ const start = () => {
         updateEmployeeRole(); 
       } else if (answer.intro === 'Update Employee Manager') {
         updateManager(); 
-      } else {
+      } else if (answer.intro === 'Quit') {
         connection.end(); 
       }
     })  
@@ -89,8 +87,9 @@ const viewByRoles = () => {
   )
 };
 
-async function addEmployee() { //SHOULD BE AN ASYNC FUNCTION TO AWAIT??? --- trying it out
-  const managers = await updateManager(); 
+const addEmployee = async () => { 
+  //const employeeNames = await helperEmployee(); 
+  //const rolesName = await helperRoles(); 
   
   inquirer
     .prompt([
@@ -106,108 +105,84 @@ async function addEmployee() { //SHOULD BE AN ASYNC FUNCTION TO AWAIT??? --- try
       },
       {
         name: 'role',
-        type: 'list',
-        message: `What is the employee's role?`,
-        choices: [
-          'Sales Manager', 
-          'Sales Person', 
-          'Lead Engineer', 
-          'Software Engineer', 
-          'Account Manager', 
-          'Accountant', 
-          'Legal Team Lead',
-          'Lawyer'
-        ] // MAYBE EASIER WAY TO REUSE?
+        type: 'input',
+        message: `What is the employee's role? ['Sales Manager = 1', 'Sales Person = 2']`
       },
       {
         name: 'manager',
-        type: 'list',
-        message: `Who is the employee's manager?`,
-        choices: managers //NEED TO FIGURE OUT A WAY TO MAKE A LIST OF EMPLOYEES INTO AN ARRAY OF STRINGS CONCATTING FIRST_NAME AND LAST_NAME
+        type: 'inputt',
+        message: `Have a manager? ['Ronald McDonald = 1', 'Panda Express = 2']`,
+        // choices: helperEmployee(),
+        // when: ({ confirmManager }) => confirmManager
       },
-    ]).then(function (answer) {
-      let roleId = answer.role; 
-      let managerId = answer.manager; 
+    ])
+    .then(answer => {
+      let name = answer.firstName; 
+      let last = answer.lastName; 
+      let roleIdEmployee = answer.role; 
+      let managerId = answer.manager || null; 
 
-      connection.query(
-        "INSERT INTO employee", // SOMETHING WRONG HERE -- PULLS THIS TABLE UP FIRST
-        {
-          first_name: answer.firstName,
-          last_name: answer.lastName,
-          role_id: roleId,
-          manager_id: managerId,
-        },
-        (err) => {
-          if (err) console.error(`Ahhhhh : `, err);
-          console.table(answer); 
-          console.log(`You've successfully added ${answer.firstName} ${answer.lastName}!!`);
-          start();
-        }
+      connection.query("INSERT INTO employee first_name=?, last_name=?, rol_id=?, manager_id=? VALUES", [name, last, roleIdEmployee, managerId], (err, res) => {
+        if (err) {console.error(`Ahhhhh : `, err)}; 
+        console.log(`${name} ${last} ${roleIdEmployee} ${managerId} Employee added! \n`)
+        start(); 
+      }
       );
     });
 };
 
 
-const removeEmployee = () => {
-  connection.promise().query("SELECT * FROM employee") //should maybe use connection.promise().query()????
-    .then((res) => {
-      return res[0].map(employee => {
-        return {
-          name: employee.first_name,
-          value: employee.id
-        }
-      })
-    .then()
-        // (err) => {
-        //   if (err) console.log(`Ahhhhh : `, err); ;
-        //   console.table(answer); 
-        //   console.log(`You've successfully added an employee!!`);
-        //   start();
-        // }
-
-    });
-};
-
-const updateEmployeeRole = () => {
-
-}
-
-// const updateManager = () => {
-//   connection.query("SELECT * FROM employee", 
-//     (err, res) => { //maybe should use connection.promisefy()???
-//        console.log(res)
-//       return res[0].map(m => {
+// const removeEmployee = () => {
+//   connection.query("SELECT * FROM employee") //should maybe use connection.promise().query()????
+//     .then((res) => {
+//       return res[0].map(employee => {
 //         return {
-//           name: `${m.first_name} ${m.last_name}`,
-//           value: m.id
+//           name: employee.first_name,
+//           value: employee.id
 //         }
 //       })
-//     console.table(res); 
+//     .then()
+//         (err) => {
+//           if (err) console.log(`Ahhhhh : `, err); ;
+//           console.table(answer); 
+//           console.log(`You've successfully added an employee!!`);
+//           start();
+//         }
 
+//     });
+// };
 
-//   })
-// }
+// HELPER FUNCTIONS!!!!!!!!!!!!!!!!!!!!!!
 
-const selectingManager = () => {
-  connection.promise().query("SELECT * FROM employee")
-  .then(res => {
-    return res[0].map(manager => {
-      return {
-        name: employee.first_name,
-        value: employee.id,
-      }
-    })
+const helperEmployee = async () => {
+  let res = await connection.query(`SELECT CONCAT(employee.first_name, " ", employee.last_name) AS fullName, employee.id FROM employee`); 
+  let employeeName = []; 
+  res.forEach(emp => {
+    employeeName.push({ name: emp.fullName, value: emp.id})
   })
+  return employeeName; 
+}
+
+const helperRoles = async () => {
+  let res = await connection.query(`SELECT employee_role.title, employee_role.id FROM employee_role`); 
+  let roleChoices = []; 
+
+  res.forEach(roles => {
+    roleChoices.push({ name: roles.title, value: roles.id })
+  })
+  return roleChoices; 
 }
 
 
-
-
-
-
+// CONNECTIONS
 
 connection.connect((err) => {
   if (err) console.log(`Ahhhhh : `, err); 
-
-  start();
+  start(); 
 });
+
+connection.query = util.promisify(connection.query).bind(connection); //NEED TO LOOK INTO THIS MORE -- I THINK CREATED A NICE TABLE FORMAT
+
+
+
+

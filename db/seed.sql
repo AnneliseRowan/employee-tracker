@@ -12,8 +12,8 @@ INSERT INTO employee_role
 VALUES  ('Sales Manager', 85000, 1),
         ('Sales Person', 45000, 1),
 
-        ('Mechanical Engineer', 100000, 2),
-        ('Softare Engineer', 115000, 2),
+        ('Lead Engineer', 150000, 2),
+        ('Software Engineer', 115000, 2),
 
         ('Account Manager', 120000, 3),
         ('Accountant', 75000, 3),
@@ -24,27 +24,17 @@ VALUES  ('Sales Manager', 85000, 1),
 
 INSERT INTO employee
     (first_name, last_name, role_id, manager_id)
-VALUES  ('Ronald', 'McDonald', 1, 2),
-        ('Panda', 'Express', 2, NULL),
-        ('Little', 'Ceasars', 3, 4),
-        ('Taco', 'Bell', 4, 1),
+VALUES  ('Ronald', 'McDonald', 1, NULL),
+        ('Panda', 'Express', 2, 1),
+        ('Little', 'Ceasars', 3, 2),
+        ('Taco', 'Bell', 4, 3),
         ('Dairy', 'Queen', 5, NULL),
         ('Auntie', 'Annes', 6, 5),
-        ('Sweet', 'Frog', 7, 2),
+        ('Sweet', 'Frog', 7, 4),
         ('Five', 'Guys', 8, NULL),
-        ('Church', 'Chicken', 9, 7),
-        ('Burger', 'King', 10, NULL);
+        ('Church', 'Chicken', 2, 8),
+        ('Burger', 'King', 6, NULL);
 
+        
 
-     (first_name, last_name, role_id, manager_id)
- VALUES  ('Ronald', 'McDonald', 1, 1),
-         ('Panda', 'Express', 2, NULL),
-         ('Little', 'Ceasars', 3, 2),
-         ('Taco', 'Bell', 4, 3),
-         ('Dairy', 'Queen', 5, NULL),
-         ('Auntie', 'Annes', 6, 4),
-         ('Sweet', 'Frog', 7, 5),
-         ('Five', 'Guys', 8, NULL),
-         ('Church', 'Chicken', 9, 6),
-         ('Burger', 'King', 10, NULL)	
          
