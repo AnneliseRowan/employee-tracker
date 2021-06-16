@@ -87,9 +87,9 @@ const viewByRoles = () => { //WORKSSSSSSSSSSSSSS
   )
 };
 
-const addEmployee = async () => { // NEED HELP HERE>>>>>>>
-  //const employeeNames = await helperEmployee(); 
-  //const rolesName = await helperRoles(); 
+const addEmployee = async () => { // WORKS ALL OF A SUDDEN!!!!!!!!!!!!! 
+  const employeeNames = await helperEmployee(); 
+  const rolesName = await helperRoles(); 
   
   inquirer
     .prompt([
@@ -105,14 +105,15 @@ const addEmployee = async () => { // NEED HELP HERE>>>>>>>
       },
       {
         name: 'role',
-        type: 'input',
-        message: `What is the employee's role? ['Sales Manager = 1', 'Sales Person = 2']`
+        type: 'list',
+        message: 'Select a title for the employee',
+        choices: rolesName
       },
       {
-        name: 'manager', //NEED TO ASSIGN THIS TO NUMBERS SOMEHOW
-        type: 'inputt',
-        message: `Have a manager? ['Ronald McDonald = 1', 'Panda Express = 2']`,
-        // choices: helperEmployee(),
+        name: 'manager',
+        type: 'list',
+        message: `What is the name of the manager (Can press enter if there is not a manager)`,
+        choices: employeeNames
         // when: ({ confirmManager }) => confirmManager
       },
     ])
@@ -152,9 +153,7 @@ const removeEmployee = async () => {
       }
     ])
     .then((res) => {
-      console.log("RESSSS", res); 
       let deleteId = res.empDelete; 
-      console.log("DELETEID", deleteId)
       
       connection.query("DELETE FROM employee WHERE id=?", [deleteId], (err, res) => {
         if (err) {console.error("AHHHHHHHHHH : ", err)}; 
