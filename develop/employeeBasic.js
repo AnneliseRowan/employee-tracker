@@ -16,7 +16,7 @@ const start = () => {
       name: 'intro',
       type: 'list',
       message: 'What would you like to do?',
-      choices: ['View All Employees By Lastname', 'View All Employees By Department', 'View All Employees By Titles', 'Add Employee', 'Remove Employee', 'Update Employee Role', 'Update Employee Manager', 'Quit'],
+      choices: ['View All Employees By Lastname', 'View All Employees By Department', 'View All Employees By Titles', 'View All Employees By Manager', 'Add Employee', 'Remove Employee', 'Update Employee Role', 'Update Employee Manager', 'Quit'],
     }).then((answer) => {
       if (answer.intro === 'View All Employees By Lastname') {
         viewAllByEmployee(); //working
@@ -24,6 +24,8 @@ const start = () => {
         viewByDepartment(); //working
       } else if (answer.intro === 'View All Employees By Titles') {
         viewByRoles(); //working
+      } else if (answer.intro === 'View All Employees By Manager') {
+        viewByManagers(); 
       } else if (answer.intro === 'Add Employee') {
         addEmployee(); //working
       } else if (answer.intro === 'Remove Employee') {
@@ -46,7 +48,7 @@ LEFT JOIN employee m ON m.id = e.manager_id JOIN employee_role ON e.role_id = em
 */
 
 const viewAllByEmployee = () => { //WORKSSSSSSSSSS
-  console.log(`Loading all information... \n`)
+  console.log(`Loading all information... \n`);
   connection.query(
     "SELECT e.id, CONCAT(e.first_name, ' ', e.last_name) AS Employee, employee_role.title AS Title, department_name AS Department, employee_role.salary AS Salary, CONCAT(m.first_name,' ', m.last_name) AS Manager FROM employee e LEFT JOIN employee m ON m.id = e.manager_id JOIN employee_role ON e.role_id = employee_role.id JOIN department ON department.id = employee_role.department_id ORDER BY e.last_name ASC", 
     (err, res) => {
@@ -60,7 +62,7 @@ const viewAllByEmployee = () => { //WORKSSSSSSSSSS
 };
 
 const viewByDepartment = () => { //WORKSSSSSSSSSSSSS
-  console.log(`Loading information by department... \n`)
+  console.log(`Loading information by department... \n`);
   connection.query(
     "SELECT e.id, CONCAT(e.first_name, ' ', e.last_name) AS Employee, employee_role.title AS Title, department_name AS Department, employee_role.salary AS Salary, CONCAT(m.first_name,' ', m.last_name) AS Manager FROM employee e LEFT JOIN employee m ON m.id = e.manager_id JOIN employee_role ON e.role_id = employee_role.id JOIN department ON department.id = employee_role.department_id ORDER BY department_name ASC", 
     (err, res) => {
@@ -78,9 +80,19 @@ const viewByRoles = () => { //WORKSSSSSSSSSSSSSS
   connection.query(
     "SELECT e.id, CONCAT(e.first_name, ' ', e.last_name) AS Employee, employee_role.title AS Title, department_name AS Department, employee_role.salary AS Salary, CONCAT(m.first_name,' ', m.last_name) AS Manager FROM employee e LEFT JOIN employee m ON m.id = e.manager_id JOIN employee_role ON e.role_id = employee_role.id JOIN department ON department.id = employee_role.department_id ORDER BY employee_role.title ASC",
     (err, res) => {
-      if(err) {
-        console.error(`Ahhhhh : `, err); 
-      }
+      if(err) {console.error(`Ahhhhh : `, err)};
+      console.table(res); 
+      start(); 
+    }
+  )
+};
+
+const viewByManagers = () => {
+  console.log(`Loading information by managers... \n`)
+  connection.query(
+    "SELECT e.id, CONCAT(e.first_name, ' ', e.last_name) AS Employee, employee_role.title AS Title, department_name AS Department, employee_role.salary AS Salary, CONCAT(m.first_name, ' ', m.last_name) AS Manager FROM employee e LEFT JOIN employee m ON m.id = e.manager_id JOIN employee_role ON e.role_id = employee_role.id JOIN department ON department.id = employee_role.department_id ORDER BY e.manager_id",
+    (err, res) => {
+      if(err) {console.log(`Ahhhhhhh : `, err)}; 
       console.table(res); 
       start(); 
     }
