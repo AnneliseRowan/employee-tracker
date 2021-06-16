@@ -19,21 +19,21 @@ const start = () => {
       choices: ['View All Employees By Lastname', 'View All Employees By Department', 'View All Employees By Titles', 'Add Employee', 'Remove Employee', 'Update Employee Role', 'Update Employee Manager', 'Quit'],
     }).then((answer) => {
       if (answer.intro === 'View All Employees By Lastname') {
-        viewAllByEmployee(); 
+        viewAllByEmployee(); //working
       } else if (answer.intro === 'View All Employees By Department') {
-        viewByDepartment(); 
+        viewByDepartment(); //working
       } else if (answer.intro === 'View All Employees By Titles') {
-        viewByRoles(); 
+        viewByRoles(); //working
       } else if (answer.intro === 'Add Employee') {
-        addEmployee();
+        addEmployee(); //working
       } else if (answer.intro === 'Remove Employee') {
         removeEmployee();
       } else if (answer.intro === 'Update Employee Role') {
-        updateEmployeeRole(); 
+        updateEmployeeRole(); //working
       } else if (answer.intro === 'Update Employee Manager') {
-        updateManager(); 
+        updateManager(); //working
       } else if (answer.intro === 'Quit') {
-        connection.end(); 
+        connection.end(); //working
       }
     })  
 };
@@ -121,14 +121,11 @@ const addEmployee = async () => { // WORKS ALL OF A SUDDEN!!!!!!!!!!!!!
       let name = answer.firstName; 
       let last = answer.lastName; 
       let roleIdEmployee = answer.role; 
-      console.log("TYPEEE", typeof(roleIdEmployee))
       let managerId = answer.manager || null; 
 
       let inserts = [
         [name, last, roleIdEmployee, managerId]
       ]
-
-      //let sql = "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('Chick', 'Fil-A', 2, 6)";
 
       connection.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES?", [inserts],  (err, res) => {
         if (err) {console.error(`Ahhhhhhhhhhh : `, err)}; 
@@ -140,7 +137,7 @@ const addEmployee = async () => { // WORKS ALL OF A SUDDEN!!!!!!!!!!!!!
 };
 
 
-const removeEmployee = async () => { 
+const removeEmployee = async () => { //NOT WORKING YET
   let employees = await helperEmployee(); 
 
   inquirer
@@ -198,6 +195,38 @@ const updateEmployeeRole = async () => { //WORKS THANK GOD!!!!!!!!!!!!!!!!!!!!!!
     })
 }
 
+const updateManager = async () => { //WORKSSSSSSSSSSSSSSSSSSSSS
+  let allNames = await helperEmployee(); 
+
+  inquirer
+    .prompt([
+      {
+        type: 'list',
+        name: 'employee',
+        message: 'Select An Employee For Updating New Manager',
+        choices: allNames
+      },
+      {
+        type: 'list',
+        name: 'manager',
+        message: 'Select A Manager Name',
+        choices: allNames
+      }
+    ])
+    .then(res => {
+
+      let employeeName = res.employee;
+      let managerName = res.manager; 
+
+      connection.query("UPDATE employee SET employee.manager_id=? WHERE employee.id=?", [managerName, employeeName], (err, res) => {
+        if (err) {console.log("AHHHHHHHH : ", err)}; 
+
+        console.log(`${employeeName}, ${managerName} UPDATED!!`);
+        start(); 
+      })
+    })
+}
+
 // HELPER FUNCTIONS!!!!!!!!!!!!!!!!!!!!!!
 
 const helperEmployee = async () => { //helperEmpManager
@@ -209,7 +238,7 @@ const helperEmployee = async () => { //helperEmpManager
   return employeeName; 
 }
 
-const helperRoles = async () => {
+const helperRoles = async () => { //helperEmployee
   let res = await connection.query(`SELECT employee_role.title, employee_role.id FROM employee_role`); 
   let roleChoices = []; 
 
