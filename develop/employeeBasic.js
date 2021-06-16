@@ -45,7 +45,7 @@ FROM employee e
 LEFT JOIN employee m ON m.id = e.manager_id JOIN employee_role ON e.role_id = employee_role.id JOIN department ON department.id = employee_role.department_id 
 */
 
-const viewAllByEmployee = () => {
+const viewAllByEmployee = () => { //WORKSSSSSSSSSS
   console.log(`Loading all information... \n`)
   connection.query(
     "SELECT e.id, CONCAT(e.first_name, ' ', e.last_name) AS Employee, employee_role.title AS Title, department_name AS Department, employee_role.salary AS Salary, CONCAT(m.first_name,' ', m.last_name) AS Manager FROM employee e LEFT JOIN employee m ON m.id = e.manager_id JOIN employee_role ON e.role_id = employee_role.id JOIN department ON department.id = employee_role.department_id ORDER BY e.last_name ASC", 
@@ -59,7 +59,7 @@ const viewAllByEmployee = () => {
   )
 };
 
-const viewByDepartment = () => {
+const viewByDepartment = () => { //WORKSSSSSSSSSSSSS
   console.log(`Loading information by department... \n`)
   connection.query(
     "SELECT e.id, CONCAT(e.first_name, ' ', e.last_name) AS Employee, employee_role.title AS Title, department_name AS Department, employee_role.salary AS Salary, CONCAT(m.first_name,' ', m.last_name) AS Manager FROM employee e LEFT JOIN employee m ON m.id = e.manager_id JOIN employee_role ON e.role_id = employee_role.id JOIN department ON department.id = employee_role.department_id ORDER BY department_name ASC", 
@@ -73,7 +73,7 @@ const viewByDepartment = () => {
   )
 };
 
-const viewByRoles = () => {
+const viewByRoles = () => { //WORKSSSSSSSSSSSSSS
   console.log(`Loading information by roles... \n`)
   connection.query(
     "SELECT e.id, CONCAT(e.first_name, ' ', e.last_name) AS Employee, employee_role.title AS Title, department_name AS Department, employee_role.salary AS Salary, CONCAT(m.first_name,' ', m.last_name) AS Manager FROM employee e LEFT JOIN employee m ON m.id = e.manager_id JOIN employee_role ON e.role_id = employee_role.id JOIN department ON department.id = employee_role.department_id ORDER BY employee_role.title ASC",
@@ -87,7 +87,7 @@ const viewByRoles = () => {
   )
 };
 
-const addEmployee = async () => { 
+const addEmployee = async () => { // NEED HELP HERE>>>>>>>
   //const employeeNames = await helperEmployee(); 
   //const rolesName = await helperRoles(); 
   
@@ -109,7 +109,7 @@ const addEmployee = async () => {
         message: `What is the employee's role? ['Sales Manager = 1', 'Sales Person = 2']`
       },
       {
-        name: 'manager',
+        name: 'manager', //NEED TO ASSIGN THIS TO NUMBERS SOMEHOW
         type: 'inputt',
         message: `Have a manager? ['Ronald McDonald = 1', 'Panda Express = 2']`,
         // choices: helperEmployee(),
@@ -120,10 +120,17 @@ const addEmployee = async () => {
       let name = answer.firstName; 
       let last = answer.lastName; 
       let roleIdEmployee = answer.role; 
+      console.log("TYPEEE", typeof(roleIdEmployee))
       let managerId = answer.manager || null; 
 
-      connection.query("INSERT INTO employee first_name=?, last_name=?, rol_id=?, manager_id=? VALUES", [name, last, roleIdEmployee, managerId], (err, res) => {
-        if (err) {console.error(`Ahhhhh : `, err)}; 
+      let inserts = [
+        [name, last, roleIdEmployee, managerId]
+      ]
+
+      //let sql = "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('Chick', 'Fil-A', 2, 6)";
+
+      connection.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES?", [inserts],  (err, res) => {
+        if (err) {console.error(`Ahhhhhhhhhhh : `, err)}; 
         console.log(`${name} ${last} ${roleIdEmployee} ${managerId} Employee added! \n`)
         start(); 
       }
@@ -132,29 +139,69 @@ const addEmployee = async () => {
 };
 
 
-// const removeEmployee = () => {
-//   connection.query("SELECT * FROM employee") //should maybe use connection.promise().query()????
-//     .then((res) => {
-//       return res[0].map(employee => {
-//         return {
-//           name: employee.first_name,
-//           value: employee.id
-//         }
-//       })
-//     .then()
-//         (err) => {
-//           if (err) console.log(`Ahhhhh : `, err); ;
-//           console.table(answer); 
-//           console.log(`You've successfully added an employee!!`);
-//           start();
-//         }
+const removeEmployee = async () => { 
+  let employees = await helperEmployee(); 
 
-//     });
-// };
+  inquirer
+    .prompt([
+      {
+        type:'list',
+        name: 'employeeDelete',
+        message: 'Select An Employee To Remove!',
+        choices: employees
+      }
+    ])
+    .then((res) => {
+      console.log("RESSSS", res); 
+      let deleteId = res.empDelete; 
+      console.log("DELETEID", deleteId)
+      
+      connection.query("DELETE FROM employee WHERE id=?", [deleteId], (err, res) => {
+        if (err) {console.error("AHHHHHHHHHH : ", err)}; 
+
+        console.log(`${deleteId} Employee deleted!! \n`); 
+        start();
+      })
+      
+    });
+};
+
+
+const updateEmployeeRole = async () => { //WORKS THANK GOD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  let employeeNames = await helperEmployee(); 
+  let titleNames = await helperRoles(); 
+
+  inquirer
+    .prompt([
+      {
+        type: 'list',
+        name: 'employeeName',
+        message: 'Select an employee to update his title',
+        choices: employeeNames
+      },
+      {
+        type: 'list',
+        name: 'selectRole',
+        message: 'Select a new title for an employee',
+        choices: titleNames
+      }
+    ])
+    .then(res => {
+      let employeeName = res.employeeName;
+      let newRole = res.selectRole; 
+
+      connection.query("UPDATE employee SET employee.role_id=? WHERE employee.id=?", [newRole, employeeName], (err, res) => {
+        if (err) {console.log("AHHHHHHHHHH : ", err)}
+
+        console.log(`${employeeName}, ${newRole} Updated!!!! \n`);
+        start(); 
+      })
+    })
+}
 
 // HELPER FUNCTIONS!!!!!!!!!!!!!!!!!!!!!!
 
-const helperEmployee = async () => {
+const helperEmployee = async () => { //helperEmpManager
   let res = await connection.query(`SELECT CONCAT(employee.first_name, " ", employee.last_name) AS fullName, employee.id FROM employee`); 
   let employeeName = []; 
   res.forEach(emp => {
