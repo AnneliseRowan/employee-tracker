@@ -153,7 +153,7 @@ const addEmployee = async () => { // WORKS ALL OF A SUDDEN!!!!!!!!!!!!!
 };
 
 
-const removeEmployee = async () => { //NOT WORKING YET
+const removeEmployee = async () => { //AHHHHHHHHHHHHH WORKINGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
   let employees = await helperEmployee(); 
 
   inquirer
@@ -166,12 +166,16 @@ const removeEmployee = async () => { //NOT WORKING YET
       }
     ])
     .then((res) => {
-      let deleteId = res.empDelete; 
+      let deleteId = res.employeeDelete; 
+
+      let inserts = [
+        [deleteId]
+      ]
       
-      connection.query("DELETE FROM employee WHERE id=?", [deleteId], (err, res) => {
+      connection.query("DELETE FROM employee WHERE id=?", [inserts], (err, res) => {
         if (err) {console.error("AHHHHHHHHHH : ", err)}; 
 
-        console.log(`${deleteId} Employee deleted!! \n`); 
+        console.log(`${inserts} Employee deleted!! \n`); 
         start();
       })
       
