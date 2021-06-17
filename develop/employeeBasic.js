@@ -16,7 +16,7 @@ const start = () => {
       name: 'intro',
       type: 'list',
       message: 'What would you like to do?',
-      choices: ['View All Employees By Lastname', 'View All Employees By Department', 'View All Employees By Titles', 'View All Employees By Manager', 'Add Employee', 'Remove Employee', 'Update Employee Role', 'Update Employee Manager', 'Quit'],
+      choices: ['View All Employees By Lastname', 'View All Employees By Department', 'View All Employees By Titles', 'View All Employees By Manager', 'Add Employee', 'Remove Employee', 'Add A Department', 'Add A New Title', 'Update Employee Role', 'Update Employee Manager', 'Quit'],
     }).then((answer) => {
       if (answer.intro === 'View All Employees By Lastname') {
         viewAllByEmployee(); //working
@@ -25,11 +25,15 @@ const start = () => {
       } else if (answer.intro === 'View All Employees By Titles') {
         viewByRoles(); //working
       } else if (answer.intro === 'View All Employees By Manager') {
-        viewByManagers(); 
+        viewByManagers(); //working
       } else if (answer.intro === 'Add Employee') {
         addEmployee(); //working
       } else if (answer.intro === 'Remove Employee') {
         removeEmployee();
+      } else if (answer.intro === 'Add A Department') {
+        addDepartment(); //working
+      } else if (answer.intro === 'Add A New Title') {
+        addRole(); //working
       } else if (answer.intro === 'Update Employee Role') {
         updateEmployeeRole(); //working
       } else if (answer.intro === 'Update Employee Manager') {
@@ -87,7 +91,7 @@ const viewByRoles = () => { //WORKSSSSSSSSSSSSSS
   )
 };
 
-const viewByManagers = () => {
+const viewByManagers = () => { //workingssssssssssssss
   console.log(`Loading information by managers... \n`)
   connection.query(
     "SELECT e.id, CONCAT(e.first_name, ' ', e.last_name) AS Employee, employee_role.title AS Title, department_name AS Department, employee_role.salary AS Salary, CONCAT(m.first_name, ' ', m.last_name) AS Manager FROM employee e LEFT JOIN employee m ON m.id = e.manager_id JOIN employee_role ON e.role_id = employee_role.id JOIN department ON department.id = employee_role.department_id ORDER BY e.manager_id",
@@ -174,8 +178,74 @@ const removeEmployee = async () => { //NOT WORKING YET
     });
 };
 
+const addDepartment = async () => { //WORKSSSSSSSSSSSSS
+  
+  inquirer
+    .prompt([
+      {
+        name: 'deptName',
+        type: 'input',
+        message: `What is the Department name you would like to add?`,
+      }
+    ])
+    .then(answer => {
+      let deptName = answer.deptName 
 
-const updateEmployeeRole = async () => { //WORKS THANK GOD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      let inserts = [
+        [deptName]
+      ]
+
+      connection.query("INSERT INTO department (department_name) VALUES?", [inserts],  (err, res) => {
+        if (err) {console.error(`Ahhhhhhhhhhh : `, err)}; 
+        console.log(`${deptName} added to the Departments! \n`)
+        start(); 
+      }
+      );
+    });
+};
+
+const addRole = async () => { //WORKSSSSSSSSSSSSSSS
+  let roleChoices = await helperArrayFunc(); 
+
+  inquirer
+    .prompt([
+      {
+        name: 'titleName',
+        type: 'input',
+        message: `What is the title name you would like to add?`,
+      },
+      {
+        name: 'titleSalary',
+        type: 'input',
+        message: `What is the salary?`,
+      },
+      {
+        name: 'titleDept',
+        type: 'list',
+        message: `What is the department?`,
+        choices: roleChoices
+      }
+    ])
+    .then(answer => {
+      let title = answer.titleName;
+      let salary = answer.titleSalary; 
+      let dept = answer.titleDept; 
+
+      let inserts = [
+        [title, salary, dept]
+      ]
+
+      connection.query("INSERT INTO employee_role (title, salary, department_id) VALUES?", [inserts],  (err, res) => {
+        if (err) {console.error(`Ahhhhhhhhhhh : `, err)}; 
+        console.log(`${title}, ${salary}, ${dept} added to Titles! \n`)
+        start(); 
+      }
+      );
+    });
+};
+
+
+const updateEmployeeRole = async () => { //RECHECK!!!!
   let employeeNames = await helperEmployee(); 
   let titleNames = await helperRoles(); 
 
@@ -203,8 +273,8 @@ const updateEmployeeRole = async () => { //WORKS THANK GOD!!!!!!!!!!!!!!!!!!!!!!
 
         console.log(`${employeeName}, ${newRole} Updated!!!! \n`);
         start(); 
-      })
-    })
+      });
+    });
 }
 
 const updateManager = async () => { //WORKSSSSSSSSSSSSSSSSSSSSS
@@ -260,6 +330,16 @@ const helperRoles = async () => { //helperEmployee
   return roleChoices; 
 }
 
+const helperArrayFunc = async () => { //helperArray
+  let res = await connection.query(`SELECT * FROM department`);
+  let deptChoice = [];
+
+  res.forEach(dept => deptChoice.push({ name: dept.department_name, value: dept.id }));
+
+  console.log(deptChoice)
+
+  return deptChoice; 
+}
 
 // CONNECTIONS
 
