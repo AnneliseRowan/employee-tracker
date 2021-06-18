@@ -16,7 +16,7 @@ const start = () => {
       name: 'intro',
       type: 'list',
       message: 'What would you like to do?',
-      choices: ['View All Employees By Lastname', 'View All Employees By Department', 'View All Employees By Titles', 'View All Employees By Manager', 'Add Employee', 'Remove Employee', 'Add A Department', 'Add A New Title', 'Remove A Title', 'Update Employee Title', 'Update Employee Manager', 'Quit'],
+      choices: ['View All Employees By Lastname', 'View All Employees By Department', 'View All Employees By Titles', 'View All Employees By Manager', 'Add Employee', 'Remove Employee', 'Add A Department', 'Add A New Title', 'Remove A Title', 'Update Employee Title', 'Update Employee Manager', 'See The Utilized Budget', 'Quit'],
     }).then((answer) => {
       if (answer.intro === 'View All Employees By Lastname') {
         viewAllByEmployee(); //working
@@ -40,6 +40,8 @@ const start = () => {
         updateEmployeeRole(); //working
       } else if (answer.intro === 'Update Employee Manager') {
         updateManager(); //working
+      } else if (answer.intro === 'See The Utilized Budget') {
+        budget(); 
       } else if (answer.intro === 'Quit') {
         connection.end(); //working
       }
@@ -343,6 +345,16 @@ const updateManager = async () => { //WORKSSSSSSSSSSSSSSSSSSSSS
         start(); 
       })
     })
+}
+
+const budget = async () => {
+  let res = await connection.query("SELECT SUM(salary) AS salary FROM employee_role")
+  let budgetTotal = []; 
+  console.log("1", res)
+  res.forEach(bud => budgetTotal.push({ salary: bud.salary }))
+  console.log("The total utilized budget is - $", budgetTotal[0].salary);
+  start(); 
+
 }
 
 // HELPER FUNCTIONS!!!!!!!!!!!!!!!!!!!!!!
