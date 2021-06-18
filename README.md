@@ -30,4 +30,4 @@ A command-line application that allows the user to:
 
 ## Demo
 
-Here is a link to a video of the application : 
+Here is a link to a video of the application : https://youtu.be/OcECf0NPoWI
