@@ -29,7 +29,7 @@ const start = () => {
       } else if (answer.intro === 'Add Employee') {
         addEmployee(); //working
       } else if (answer.intro === 'Remove Employee') {
-        removeEmployee(); //working
+        removeEmployee(); 
       } else if (answer.intro === 'Add A Department') {
         addDepartment(); //working
       } else if (answer.intro === 'Add A New Title') {
@@ -132,7 +132,7 @@ const addEmployee = async () => { // WORKS ALL OF A SUDDEN!!!!!!!!!!!!!
         name: 'manager',
         type: 'list',
         message: `What is the name of the manager (Can press enter if there is not a manager)`,
-        choices: employeeNames
+        choices: [employeeNames, null]
         // when: ({ confirmManager }) => confirmManager
       },
     ])
@@ -328,7 +328,7 @@ const updateManager = async () => { //WORKSSSSSSSSSSSSSSSSSSSSS
         type: 'list',
         name: 'manager',
         message: 'Select A Manager Name',
-        choices: allNames
+        choices: allNames || NULL
       }
     ])
     .then(res => {
@@ -354,7 +354,7 @@ const helperEmployee = async () => { //helperEmpManager
     employeeName.push({ name: emp.fullName, value: emp.id})
   })
 
-  console.log(employeeNamess)
+  console.log(employeeName)
   return employeeName; 
 }
 
