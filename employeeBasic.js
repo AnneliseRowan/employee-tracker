@@ -16,39 +16,41 @@ const start = () => {
       name: 'intro',
       type: 'list',
       message: 'What would you like to do?',
-      choices: ['View All Employees By Lastname', 'View All Employees By Department', 'View All Employees By Titles', 'View All Employees By Manager', 'Add Employee', 'Remove Employee', 'Add A Department', 'Add A New Title', 'Remove A Title', 'Update Employee Title', 'Update Employee Manager', 'See The Utilized Budget', 'Quit'],
+      choices: ['View All Employees By Lastname', 'View All Employees By Department', 'View All Employees By Titles', 'View All Employees By Manager', 'Add Employee', 'Remove Employee', 'Add A Department', 'Remove A Department', 'Add A New Title', 'Remove A Title', 'Update Employee Title', 'Update Employee Manager', 'See The Utilized Budget', 'Quit'],
     }).then((answer) => {
       if (answer.intro === 'View All Employees By Lastname') {
-        viewAllByEmployee(); //working
+        viewAllByEmployee(); 
       } else if (answer.intro === 'View All Employees By Department') {
-        viewByDepartment(); //working
+        viewByDepartment(); 
       } else if (answer.intro === 'View All Employees By Titles') {
-        viewByRoles(); //working
+        viewByRoles(); 
       } else if (answer.intro === 'View All Employees By Manager') {
-        viewByManagers(); //working
+        viewByManagers(); 
       } else if (answer.intro === 'Add Employee') {
-        addEmployee(); //working
+        addEmployee();
       } else if (answer.intro === 'Remove Employee') {
         removeEmployee(); 
       } else if (answer.intro === 'Add A Department') {
-        addDepartment(); //working
+        addDepartment(); 
+      } else if (answer.intro === 'Remove A Department') { 
+        removeDepartment(); 
       } else if (answer.intro === 'Add A New Title') {
-        addRole(); //working
+        addRole(); 
       } else if (answer.intro === 'Remove A Title') {
         removeRole(); 
       } else if (answer.intro === 'Update Employee Title') {
-        updateEmployeeRole(); //working
+        updateEmployeeRole(); 
       } else if (answer.intro === 'Update Employee Manager') {
-        updateManager(); //working
+        updateManager(); 
       } else if (answer.intro === 'See The Utilized Budget') {
         budget(); 
       } else if (answer.intro === 'Quit') {
-        connection.end(); //working
+        connection.end(); 
       }
     })  
 };
 
-// HOW TO ADD NULL TO THE MANAGER LIST??????????????
+
 
 /*
 SELECT e.id, CONCAT(e.first_name, ' ', e.last_name) AS Employee, employee_role.title AS Title, department_name AS Department, employee_role.salary AS Salary, CONCAT(m.first_name, " ", m.last_name) AS Manager 
@@ -56,7 +58,7 @@ FROM employee e
 LEFT JOIN employee m ON m.id = e.manager_id JOIN employee_role ON e.role_id = employee_role.id JOIN department ON department.id = employee_role.department_id 
 */
 
-const viewAllByEmployee = () => { //WORKSSSSSSSSSS
+const viewAllByEmployee = () => { 
   console.log(`Loading all information... \n`);
   connection.query(
     "SELECT e.id, CONCAT(e.first_name, ' ', e.last_name) AS Employee, employee_role.title AS Title, department_name AS Department, employee_role.salary AS Salary, CONCAT(m.first_name,' ', m.last_name) AS Manager FROM employee e LEFT JOIN employee m ON m.id = e.manager_id JOIN employee_role ON e.role_id = employee_role.id JOIN department ON department.id = employee_role.department_id ORDER BY e.last_name ASC", 
@@ -70,7 +72,7 @@ const viewAllByEmployee = () => { //WORKSSSSSSSSSS
   )
 };
 
-const viewByDepartment = () => { //WORKSSSSSSSSSSSSS
+const viewByDepartment = () => { 
   console.log(`Loading information by department... \n`);
   connection.query(
     "SELECT e.id, CONCAT(e.first_name, ' ', e.last_name) AS Employee, employee_role.title AS Title, department_name AS Department, employee_role.salary AS Salary, CONCAT(m.first_name,' ', m.last_name) AS Manager FROM employee e LEFT JOIN employee m ON m.id = e.manager_id JOIN employee_role ON e.role_id = employee_role.id JOIN department ON department.id = employee_role.department_id ORDER BY department_name ASC", 
@@ -84,7 +86,7 @@ const viewByDepartment = () => { //WORKSSSSSSSSSSSSS
   )
 };
 
-const viewByRoles = () => { //WORKSSSSSSSSSSSSSS
+const viewByRoles = () => { 
   console.log(`Loading information by roles... \n`)
   connection.query(
     "SELECT e.id, CONCAT(e.first_name, ' ', e.last_name) AS Employee, employee_role.title AS Title, department_name AS Department, employee_role.salary AS Salary, CONCAT(m.first_name,' ', m.last_name) AS Manager FROM employee e LEFT JOIN employee m ON m.id = e.manager_id JOIN employee_role ON e.role_id = employee_role.id JOIN department ON department.id = employee_role.department_id ORDER BY employee_role.title ASC",
@@ -96,7 +98,7 @@ const viewByRoles = () => { //WORKSSSSSSSSSSSSSS
   )
 };
 
-const viewByManagers = () => { //workingssssssssssssss
+const viewByManagers = () => { 
   console.log(`Loading information by managers... \n`)
   connection.query(
     "SELECT e.id, CONCAT(e.first_name, ' ', e.last_name) AS Employee, employee_role.title AS Title, department_name AS Department, employee_role.salary AS Salary, CONCAT(m.first_name, ' ', m.last_name) AS Manager FROM employee e LEFT JOIN employee m ON m.id = e.manager_id JOIN employee_role ON e.role_id = employee_role.id JOIN department ON department.id = employee_role.department_id ORDER BY e.manager_id",
@@ -108,7 +110,7 @@ const viewByManagers = () => { //workingssssssssssssss
   )
 };
 
-const addEmployee = async () => { // WORKS ALL OF A SUDDEN!!!!!!!!!!!!! 
+const addEmployee = async () => { 
   const employeeNames = await helperEmployee(); 
   const rolesName = await helperRoles(); 
   
@@ -133,9 +135,8 @@ const addEmployee = async () => { // WORKS ALL OF A SUDDEN!!!!!!!!!!!!!
       {
         name: 'manager',
         type: 'list',
-        message: `What is the name of the manager (Can press enter if there is not a manager)`,
-        choices: [employeeNames, null]
-        // when: ({ confirmManager }) => confirmManager
+        message: `What is the name of the manager?`,
+        choices: employeeNames 
       },
     ])
     .then(answer => {
@@ -158,7 +159,7 @@ const addEmployee = async () => { // WORKS ALL OF A SUDDEN!!!!!!!!!!!!!
 };
 
 
-const removeEmployee = async () => { //DOESN'T WORK -_- -----Don't know how to do it when it is tied to other things
+const removeEmployee = async () => { 
   let employees = await helperEmployee(); 
 
   inquirer
@@ -187,7 +188,7 @@ const removeEmployee = async () => { //DOESN'T WORK -_- -----Don't know how to d
     });
 };
 
-const addDepartment = async () => { //WORKSSSSSSSSSSSSS
+const addDepartment = async () => { 
   
   inquirer
     .prompt([
@@ -213,7 +214,34 @@ const addDepartment = async () => { //WORKSSSSSSSSSSSSS
     });
 };
 
-const addRole = async () => { //WORKSSSSSSSSSSSSSSS
+const  removeDepartment = async () => {
+  let deptEmp = await helperArrayFunc(); 
+
+  inquirer
+    .prompt([
+      {
+        type:'list',
+        name: 'deptDelete',
+        message: 'Select the department you would like to delete!',
+        choices: deptEmp
+      }
+    ])
+    .then((res) => {
+      let deleteId = res.titleDelete; 
+      let inserts = [
+        [deleteId]
+      ]
+      
+      connection.query("DELETE FROM department WHERE id=?", [inserts], (err, res) => {
+        if (err) {console.error("AHHHHHHHHHH : ", err)}; 
+        console.log(`${inserts} Department Removed!! \n`); 
+        start();
+      })
+      
+    });
+}
+
+const addRole = async () => { 
   let roleChoices = await helperArrayFunc(); 
 
   inquirer
@@ -253,7 +281,7 @@ const addRole = async () => { //WORKSSSSSSSSSSSSSSS
     });
 };
 
-const removeRole = async () => { //DOESN'T WORKKKKKKKKKKKKKKKKKKK ---because foreign key links
+const removeRole = async () => { 
   let titleEmployees = await helperRoles(); 
 
   inquirer
@@ -267,14 +295,12 @@ const removeRole = async () => { //DOESN'T WORKKKKKKKKKKKKKKKKKKK ---because for
     ])
     .then((res) => {
       let deleteId = res.titleDelete; 
-
       let inserts = [
         [deleteId]
       ]
       
       connection.query("DELETE FROM employee_role WHERE id=?", [inserts], (err, res) => {
         if (err) {console.error("AHHHHHHHHHH : ", err)}; 
-
         console.log(`${inserts} Title Removed!! \n`); 
         start();
       })
@@ -283,7 +309,7 @@ const removeRole = async () => { //DOESN'T WORKKKKKKKKKKKKKKKKKKK ---because for
 };
 
 
-const updateEmployeeRole = async () => { //WORKSSSSSSSSSSSSSSS
+const updateEmployeeRole = async () => { 
   let employeeNames = await helperEmployee(); 
   let titleNames = await helperRoles(); 
 
@@ -315,9 +341,8 @@ const updateEmployeeRole = async () => { //WORKSSSSSSSSSSSSSSS
     });
 }
 
-const updateManager = async () => { //WORKSSSSSSSSSSSSSSSSSSSSS
+const updateManager = async () => { 
   let allNames = await helperEmployee(); 
-
   inquirer
     .prompt([
       {
@@ -334,63 +359,50 @@ const updateManager = async () => { //WORKSSSSSSSSSSSSSSSSSSSSS
       }
     ])
     .then(res => {
-
       let employeeName = res.employee;
       let managerName = res.manager; 
-
       connection.query("UPDATE employee SET employee.manager_id=? WHERE employee.id=?", [managerName, employeeName], (err, res) => {
         if (err) {console.log("AHHHHHHHH : ", err)}; 
-
         console.log(`${employeeName}, ${managerName} UPDATED!!`);
         start(); 
       })
     })
 }
 
-const budget = async () => {
+const budget = async () => { 
   let res = await connection.query("SELECT SUM(salary) AS salary FROM employee_role")
   let budgetTotal = []; 
-  console.log("1", res)
   res.forEach(bud => budgetTotal.push({ salary: bud.salary }))
   console.log("The total utilized budget is - $", budgetTotal[0].salary);
   start(); 
-
 }
 
-// HELPER FUNCTIONS!!!!!!!!!!!!!!!!!!!!!!
+// HELPER FUNCTIONS!!
 
-const helperEmployee = async () => { //helperEmpManager
+const helperEmployee = async () => { 
   let res = await connection.query(`SELECT CONCAT(employee.first_name, " ", employee.last_name) AS fullName, employee.id FROM employee`); 
   let employeeName = []; 
   res.forEach(emp => {
     employeeName.push({ name: emp.fullName, value: emp.id})
   })
 
-  console.log(employeeName)
   return employeeName; 
 }
 
-const helperRoles = async () => { //helperEmployee
+const helperRoles = async () => { 
   let res = await connection.query(`SELECT employee_role.title, employee_role.id FROM employee_role`); 
   let roleChoices = []; 
-
   res.forEach(roles => {
     roleChoices.push({ name: roles.title, value: roles.id })
   })
 
-  console.log(roleChoices)
-
-
   return roleChoices; 
 }
 
-const helperArrayFunc = async () => { //helperArray
+const helperArrayFunc = async () => { 
   let res = await connection.query(`SELECT * FROM department`);
   let deptChoice = [];
-
   res.forEach(dept => deptChoice.push({ name: dept.department_name, value: dept.id }));
-
-  console.log(deptChoice)
 
   return deptChoice; 
 }
@@ -402,7 +414,7 @@ connection.connect((err) => {
   start(); 
 });
 
-connection.query = util.promisify(connection.query).bind(connection); //NEED TO LOOK INTO THIS MORE -- I THINK CREATED A NICE TABLE FORMAT
+connection.query = util.promisify(connection.query).bind(connection); 
 
 
 
