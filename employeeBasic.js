@@ -16,7 +16,7 @@ const start = () => {
       name: 'intro',
       type: 'list',
       message: 'What would you like to do?',
-      choices: ['View All Employees By Lastname', 'View All Employees By Department', 'View All Employees By Titles', 'View All Employees By Manager', 'Add Employee', 'Remove Employee', 'Add A Department', 'Add A New Title', 'Update Employee Role', 'Update Employee Manager', 'Quit'],
+      choices: ['View All Employees By Lastname', 'View All Employees By Department', 'View All Employees By Titles', 'View All Employees By Manager', 'Add Employee', 'Remove Employee', 'Add A Department', 'Add A New Title', 'Remove A Title', 'Update Employee Title', 'Update Employee Manager', 'Quit'],
     }).then((answer) => {
       if (answer.intro === 'View All Employees By Lastname') {
         viewAllByEmployee(); //working
@@ -29,12 +29,14 @@ const start = () => {
       } else if (answer.intro === 'Add Employee') {
         addEmployee(); //working
       } else if (answer.intro === 'Remove Employee') {
-        removeEmployee();
+        removeEmployee(); //working
       } else if (answer.intro === 'Add A Department') {
         addDepartment(); //working
       } else if (answer.intro === 'Add A New Title') {
         addRole(); //working
-      } else if (answer.intro === 'Update Employee Role') {
+      } else if (answer.intro === 'Remove A Title') {
+        removeRole(); 
+      } else if (answer.intro === 'Update Employee Title') {
         updateEmployeeRole(); //working
       } else if (answer.intro === 'Update Employee Manager') {
         updateManager(); //working
@@ -44,6 +46,7 @@ const start = () => {
     })  
 };
 
+// HOW TO ADD NULL TO THE MANAGER LIST??????????????
 
 /*
 SELECT e.id, CONCAT(e.first_name, ' ', e.last_name) AS Employee, employee_role.title AS Title, department_name AS Department, employee_role.salary AS Salary, CONCAT(m.first_name, " ", m.last_name) AS Manager 
@@ -153,7 +156,7 @@ const addEmployee = async () => { // WORKS ALL OF A SUDDEN!!!!!!!!!!!!!
 };
 
 
-const removeEmployee = async () => { //AHHHHHHHHHHHHH WORKINGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
+const removeEmployee = async () => { //DOESN'T WORK -_- -----Don't know how to do it when it is tied to other things
   let employees = await helperEmployee(); 
 
   inquirer
@@ -248,8 +251,37 @@ const addRole = async () => { //WORKSSSSSSSSSSSSSSS
     });
 };
 
+const removeRole = async () => { //DOESN'T WORKKKKKKKKKKKKKKKKKKK ---because foreign key links
+  let titleEmployees = await helperRoles(); 
 
-const updateEmployeeRole = async () => { //RECHECK!!!!
+  inquirer
+    .prompt([
+      {
+        type:'list',
+        name: 'titleDelete',
+        message: 'Select a title you would like to remove!',
+        choices: titleEmployees
+      }
+    ])
+    .then((res) => {
+      let deleteId = res.titleDelete; 
+
+      let inserts = [
+        [deleteId]
+      ]
+      
+      connection.query("DELETE FROM employee_role WHERE id=?", [inserts], (err, res) => {
+        if (err) {console.error("AHHHHHHHHHH : ", err)}; 
+
+        console.log(`${inserts} Title Removed!! \n`); 
+        start();
+      })
+      
+    });
+};
+
+
+const updateEmployeeRole = async () => { //WORKSSSSSSSSSSSSSSS
   let employeeNames = await helperEmployee(); 
   let titleNames = await helperRoles(); 
 
@@ -321,6 +353,8 @@ const helperEmployee = async () => { //helperEmpManager
   res.forEach(emp => {
     employeeName.push({ name: emp.fullName, value: emp.id})
   })
+
+  console.log(employeeNamess)
   return employeeName; 
 }
 
@@ -331,6 +365,10 @@ const helperRoles = async () => { //helperEmployee
   res.forEach(roles => {
     roleChoices.push({ name: roles.title, value: roles.id })
   })
+
+  console.log(roleChoices)
+
+
   return roleChoices; 
 }
 
