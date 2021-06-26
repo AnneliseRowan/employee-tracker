@@ -16,7 +16,7 @@ const start = () => {
       name: 'intro',
       type: 'list',
       message: 'What would you like to do?',
-      choices: ['View All Employees By Lastname', 'View All Employees By Department', 'View All Employees By Titles', 'View All Employees By Manager', 'Add Employee', 'Remove Employee', 'Add A Department', 'Remove A Department', 'Add A New Title', 'Remove A Title', 'Update Employee Title', 'Update Employee Manager', 'See The Utilized Budget', 'Quit'],
+      choices: ['View All Employees By Lastname', 'View All Employees By Department', 'View All Employees By Titles', 'View All Employees By Manager', 'Add Employee', 'Remove Employee', 'View Departments', 'Add A Department', 'Remove A Department', 'View Titles', 'Add A New Title', 'Remove A Title', 'Update Employee Title', 'Update Employee Manager', 'See The Utilized Budget', 'Quit'],
     }).then((answer) => {
       if (answer.intro === 'View All Employees By Lastname') {
         viewAllByEmployee(); 
@@ -30,10 +30,14 @@ const start = () => {
         addEmployee();
       } else if (answer.intro === 'Remove Employee') {
         removeEmployee(); 
+      } else if (answer.intro === 'View Departments') {
+        viewDepartments(); 
       } else if (answer.intro === 'Add A Department') {
         addDepartment(); 
       } else if (answer.intro === 'Remove A Department') { 
         removeDepartment(); 
+      } else if (answer.intro === 'View Titles') {
+        viewTitles(); 
       } else if (answer.intro === 'Add A New Title') {
         addRole(); 
       } else if (answer.intro === 'Remove A Title') {
@@ -188,6 +192,21 @@ const removeEmployee = async () => {
     });
 };
 
+const viewDepartments = () => {
+  console.log(`Loading departments... \n`);
+  connection.query(
+    "SELECT department_name FROM department", 
+    (err, res) => {
+      if(err) {
+        console.log(`Ahhhhh : `, err); 
+      }
+      console.table(res); 
+      start(); 
+    }
+  )
+
+}
+
 const addDepartment = async () => { 
   
   inquirer
@@ -239,6 +258,20 @@ const  removeDepartment = async () => {
       })
       
     });
+}
+
+const viewTitles = () => {
+  console.log(`Loading titles... \n`);
+  connection.query(
+    "SELECT title FROM employee_role", 
+    (err, res) => {
+      if(err) {
+        console.log(`Ahhhhh : `, err); 
+      }
+      console.table(res); 
+      start(); 
+    }
+  )
 }
 
 const addRole = async () => { 
